@@ -28,10 +28,22 @@ export function StackingScroll({ children }: Props) {
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
+    // Touch / coarse-pointer devices get native scroll — no stacking effect.
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
     const pins = pinRefs.current.filter((p): p is HTMLDivElement => !!p);
     const cards = cardRefs.current.filter((c): c is HTMLDivElement => !!c);
     const n = cards.length;
     if (n < 2 || pins.length !== n) return;
+
+    // Apply sticky styles only on desktop (avoids compositing layers on mobile).
+    cards.forEach((card) => {
+      card.style.position = "sticky";
+      card.style.top = "0";
+      card.style.transformOrigin = "top center";
+      card.style.willChange = "transform";
+      card.style.minHeight = "100vh";
+    });
 
     // Scroll distance for the scale-down transition per section
     const TRIGGER = 500;
@@ -125,13 +137,6 @@ export function StackingScroll({ children }: Props) {
           <div
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             ref={(el: any) => { cardRefs.current[i] = el; }}
-            style={{
-              position: "sticky",
-              top: 0,
-              transformOrigin: "top center",
-              willChange: "transform",
-              minHeight: "100vh",
-            }}
           >
             {child}
           </div>

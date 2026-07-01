@@ -1,0 +1,1186 @@
+@import "tailwindcss";
+
+/* ============================================================
+   NMJ Group — Design tokens
+   Light: Clean editorial white luxury UI.
+   Dark : Cinematic, futuristic, navy-glow corporate.
+   Tokens swap automatically via .dark class on <html>.
+   ============================================================ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Surfaces */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f7f8fa;
+  --color-card-bg: rgba(255, 255, 255, 0.72);
+
+  /* Text */
+  --color-ink: #111827;
+  --color-text-muted: #6b7280;
+  --color-text-subtle: #9ca3af;
+
+  /* Borders */
+  --color-border: rgba(0, 0, 0, 0.06);
+  --color-border-strong: rgba(0, 0, 0, 0.12);
+  --color-border-dark: rgba(255, 255, 255, 0.08);
+
+  /* Accent — warm luxury gold (Hamdan-style) */
+  --color-gold: #c9a961;
+  --color-gold-subtle: #d4b87a;
+  --color-accent-glow: rgba(201, 169, 97, 0.30);
+  --color-accent-glow-strong: rgba(201, 169, 97, 0.50);
+
+  /* Dark moments (Closing CTA + Footer) — overridden in dark mode for elevation */
+  --color-obsidian: #0a0a0a;
+  --color-ivory: #ffffff;
+
+  /* Type stacks — wired to next/font CSS variables */
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+
+  --color-bg-primary: #050505;
+  --color-bg-secondary: #0d0f14;
+  --color-card-bg: rgba(18, 18, 20, 0.72);
+
+  --color-ink: #ffffff;
+  --color-text-muted: #9ca3af;
+  --color-text-subtle: #6b7280;
+
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+  --color-border-dark: rgba(255, 255, 255, 0.06);
+
+  --color-gold: #e6c98a;
+  --color-gold-subtle: #d4b87a;
+  --color-accent-glow: rgba(230, 201, 138, 0.30);
+  --color-accent-glow-strong: rgba(230, 201, 138, 0.55);
+
+  /* Slight elevation above pure-black bg so dark CTA sections still read */
+  --color-obsidian: #0d0f14;
+  --color-ivory: #ffffff;
+}
+
+html,
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-ink);
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+html {
+  /* iPhone notch + Samsung curved-edge safe areas */
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Stop sub-pixel rounding errors / wide hero images from causing
+     horizontal scroll on narrow phones (Galaxy S 360px, iPhone SE 375px). */
+  overflow-x: hidden;
+  /* Prevent iOS auto-zoom on text inputs <16px */
+  -webkit-text-size-adjust: 100%;
+  /* Enable GPU-composited scroll on iOS — critical for 60fps */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS inputs zoom in unless font-size ≥ 16px */
+input,
+textarea,
+select {
+  font-size: 16px;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+
+/* Soft gold focus ring on form fields — premium, theme-aware. */
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 0 3px var(--color-accent-glow);
+}
+
+/* Min tap target 44x44 (WCAG / Apple HIG) + instant tap response on iOS */
+button,
+a[role="button"],
+[type="button"],
+[type="submit"],
+a {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+
+::selection {
+  background-color: var(--color-gold);
+  color: var(--color-ivory);
+}
+
+/* Lenis smooth-scroll safety hooks */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+/* Offset scroll-into-view targets so the sticky header doesn't cover them */
+:is(h1, h2, h3, section)[id] {
+  scroll-margin-top: 100px;
+}
+
+/* ============================================================
+   Premium glass card
+   Frosted glass, soft inner highlight, hover lift + glow.
+   Works in both light and dark modes via token swap.
+   ============================================================ */
+.premium-card {
+  position: relative;
+  background: var(--color-card-bg);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  /* Spring-physics overshoot on lift — cubic-bezier(0.34,1.56,0.64,1) = spring */
+  transition:
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s ease,
+    background-color 0.4s ease;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .premium-card {
+    padding: 30px;
+    border-radius: 24px;
+  }
+}
+
+html.dark .premium-card {
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.premium-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.1)
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+html.dark .premium-card::before {
+  background: linear-gradient(
+    135deg,
+    rgba(230, 201, 138, 0.14),
+    rgba(230, 201, 138, 0.02)
+  );
+}
+
+.premium-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.premium-card:hover {
+  transform: translateY(-7px) scale(1.018);
+  box-shadow:
+    0 32px 64px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(201, 169, 97, 0.22),
+    0 0 48px var(--color-accent-glow);
+  border-color: var(--color-gold-subtle);
+}
+
+html.dark .premium-card:hover {
+  box-shadow:
+    0 32px 64px rgba(0, 0, 0, 0.60),
+    0 0 0 1px rgba(230, 201, 138, 0.28),
+    0 0 52px var(--color-accent-glow-strong);
+}
+
+.premium-card:hover::before {
+  opacity: 1;
+}
+
+/* ============================================================
+   Cinematic backgrounds — radial glow + noise overlay
+   Use on hero/CTA sections to add depth.
+   ============================================================ */
+.cinematic-bg {
+  position: relative;
+  isolation: isolate;
+}
+
+.cinematic-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(
+      60% 50% at 12% 20%,
+      var(--color-accent-glow) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      50% 40% at 88% 80%,
+      var(--color-accent-glow) 0%,
+      transparent 65%
+    );
+  opacity: 0.7;
+}
+
+html.dark .cinematic-bg::before {
+  opacity: 1;
+}
+
+.cinematic-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.9'/></svg>");
+  background-size: 160px 160px;
+}
+
+html.dark .cinematic-bg::after {
+  opacity: 0.06;
+}
+
+/* Soft directional spotlight — drop into a section for cinematic lighting */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(
+    50% 40% at 50% 0%,
+    var(--color-accent-glow) 0%,
+    transparent 70%
+  );
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fade-up 0.8s ease-out both;
+}
+
+/* ============================================================
+   Scroll-reveal animations
+   Mark elements with data-reveal to fade-up when they enter the
+   viewport. data-reveal-stagger="80" on a container auto-applies
+   80ms increments between immediate children.
+   Variants:
+     data-reveal           → fade + lift up (default)
+     data-reveal="fade"    → fade only, no translate
+     data-reveal="left"    → fade + slide in from the left
+     data-reveal="right"   → fade + slide in from the right
+     data-reveal="scale"   → fade + tiny scale-up
+   ============================================================ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  filter: blur(5px);
+  transition:
+    opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+[data-reveal="fade"] {
+  transform: none;
+  filter: blur(6px);
+}
+
+[data-reveal="left"] {
+  transform: translateX(-36px);
+  filter: blur(5px);
+}
+
+[data-reveal="right"] {
+  transform: translateX(36px);
+  filter: blur(5px);
+}
+
+[data-reveal="scale"] {
+  transform: translateY(18px) scale(0.97);
+  filter: blur(5px);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+  filter: blur(0px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+}
+
+@keyframes scrollLine {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(200%);
+  }
+}
+
+.scroll-line {
+  animation: scrollLine 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 18px var(--color-accent-glow);
+  }
+  50% {
+    box-shadow: 0 0 28px var(--color-accent-glow-strong);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Smooth transitions for theme swap on all themed elements */
+header,
+footer,
+section,
+article {
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+/* ============================================================
+   Golden custom cursor
+   Three fixed layers (glow → ring → dot) driven by CursorGlow.tsx.
+   Active only when <html> has .cursor-glow-active (fine pointers).
+   ============================================================ */
+.cursor-dot,
+.cursor-ring,
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: opacity 0.3s ease;
+}
+
+.cursor-dot {
+  z-index: 10001;
+  height: 7px;
+  width: 7px;
+  border-radius: 9999px;
+  background: #111827;
+  transition: opacity 0.3s ease, background-color 0.2s ease;
+}
+
+html.dark .cursor-dot {
+  background: #ffffff;
+}
+
+.cursor-ring {
+  z-index: 10000;
+  height: 36px;
+  width: 36px;
+  border-radius: 9999px;
+  border: 1.5px solid #111827;
+  transition:
+    opacity 0.3s ease,
+    width 0.25s ease,
+    height 0.25s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+html.dark .cursor-ring {
+  border-color: #ffffff;
+}
+
+.cursor-ring.is-hover {
+  height: 58px;
+  width: 58px;
+  background: rgba(17, 24, 39, 0.08);
+  border-color: #111827;
+}
+
+html.dark .cursor-ring.is-hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #ffffff;
+}
+
+.cursor-ring.is-down {
+  height: 26px;
+  width: 26px;
+  background: rgba(17, 24, 39, 0.15);
+}
+
+html.dark .cursor-ring.is-down {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.cursor-glow {
+  z-index: 9998;
+  height: 360px;
+  width: 360px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(17, 24, 39, 0.07) 0%, transparent 65%);
+}
+
+html.dark .cursor-glow {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, transparent 65%);
+}
+
+/* ============================================================
+   Cursor light variant — white cursor over dark (obsidian) sections.
+   Toggled via the `is-light` class by CursorGlow.tsx when the pointer
+   enters any [data-cursor-light] element (footer, CTA sections).
+   Transitions are already declared on .cursor-dot / .cursor-ring.
+   ============================================================ */
+.cursor-dot.is-light {
+  background: #ffffff;
+}
+
+.cursor-ring.is-light {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.cursor-ring.is-light.is-hover {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: #ffffff;
+}
+
+.cursor-ring.is-light.is-down {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.cursor-glow.is-light {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 65%);
+}
+
+/* Hide the native cursor while the custom one is active — but keep the
+   caret on editable fields so typing stays usable. */
+html.cursor-glow-active,
+html.cursor-glow-active *:not(input):not(textarea):not([contenteditable="true"]) {
+  cursor: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-glow {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Loading skeleton — shimmering placeholder
+   ============================================================ */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-card-bg),
+    transparent
+  );
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   Micro-interactions
+   ============================================================ */
+/* Tactile press feedback for primary actions. */
+.press {
+  transition: transform 0.18s ease, box-shadow 0.3s ease;
+}
+.press:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+/* Spinner used in button busy states. */
+.spinner {
+  display: inline-block;
+  height: 14px;
+  width: 14px;
+  border-radius: 9999px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animated success check — draws the tick on mount. */
+.check-draw {
+  stroke-dasharray: 26;
+  stroke-dashoffset: 26;
+  animation: check-draw 0.5s 0.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes check-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Donut/progress ring sweep. */
+.ring-progress {
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 1.4s;
+  }
+  .check-draw {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .ring-progress {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   Apple-style hero reveal — blur-to-sharp fade with a soft rise.
+   Plays on load; sequence the elements with --hero-delay.
+   ============================================================ */
+@keyframes hero-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(36px) scale(0.982);
+    filter: blur(14px);
+  }
+  45% {
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.hero-rise {
+  opacity: 0;
+  animation: hero-rise 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+  /* filter is animated inside @keyframes only on desktop — omit from will-change
+     on mobile via the (pointer: coarse) block to free GPU memory. */
+  will-change: opacity, transform, filter;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   Header load intro — logo + nav items fade/blur down one after
+   another on first page load (after the hero H1 has appeared).
+   Delays are set per item via --nav-delay.
+   ============================================================ */
+@keyframes nav-intro {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.nav-intro {
+  opacity: 0;
+  animation: nav-intro 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--nav-delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-intro {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   FlipText — Aluro-style text roll on hover.
+   The label is NOT duplicated in the DOM: a text-shadow copy sits
+   exactly one line below, the box clips overflow, and on hover the
+   text slides up so the shadow-copy rolls into place. currentColor
+   keeps the copy matched to the text in both themes.
+   ============================================================ */
+.flip {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: bottom;
+  line-height: 1.25;
+}
+
+.flip__inner {
+  display: inline-block;
+  line-height: 1.25;
+  text-shadow: 0 1.25em 0 currentColor;
+  transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
+}
+
+.group:hover .flip__inner,
+.flip:hover .flip__inner {
+  transform: translateY(-1.25em);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip__inner {
+    transition: none;
+  }
+  .group:hover .flip__inner,
+  .flip:hover .flip__inner {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Decorative ambient blobs — subtle, GPU-cheap, non-interactive.
+   Drop `.ambient` on a positioned container.
+   ============================================================ */
+.ambient {
+  position: relative;
+  isolation: isolate;
+}
+.ambient::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -10%;
+  right: -8%;
+  height: 320px;
+  width: 320px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    var(--color-accent-glow) 0%,
+    transparent 70%
+  );
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+html.dark .ambient::before {
+  opacity: 0.7;
+}
+
+/* ============================================================
+   Icon tile — square rounded container for an inline SVG icon.
+   Used on division / offering / feature cards. Reacts to the
+   parent .group hover with a gold border + glow.
+   ============================================================ */
+.icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  width: 52px;
+  flex: none;
+  border-radius: 14px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg-secondary);
+  color: var(--color-gold);
+  transition:
+    border-color 0.4s ease,
+    background-color 0.4s ease,
+    box-shadow 0.4s ease,
+    /* Spring bounce on the icon tile lift+rotate */
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.group:hover .icon-tile {
+  border-color: var(--color-accent-glow-strong);
+  box-shadow: 0 0 28px var(--color-accent-glow);
+  transform: translateY(-5px) rotate(-8deg);
+  background: color-mix(in srgb, var(--color-bg-secondary) 78%, var(--color-gold) 22%);
+}
+
+/* ============================================================
+   Vision · Mission · Values grid — flat, sharp-cornered panels
+   joined by hairline dividers (the 1px grid gap reveals the line
+   color). On hover a gold line draws across the top edge and the
+   surface lifts to a subtle warm wash. Inspired by the editorial
+   "company card" pattern; wired to the light/dark token system.
+   ============================================================ */
+.vmv-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--color-border-strong);
+  border: 1px solid var(--color-border-strong);
+}
+
+@media (min-width: 768px) {
+  .vmv-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.vmv-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-primary);
+  padding: clamp(2rem, 4vw, 2.75rem) clamp(1.5rem, 3vw, 2rem);
+}
+
+/* All direct children sit above the fill layer */
+.vmv-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Smooth colour transition on text */
+.vmv-card span,
+.vmv-card h3,
+.vmv-card p {
+  transition: color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Top gold bar */
+.vmv-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 2px;
+  width: 0;
+  background: var(--color-gold);
+  box-shadow: 0 0 16px var(--color-accent-glow), 0 0 32px var(--color-accent-glow);
+  transition: width 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Sweep-up gold fill */
+.vmv-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-gold);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vmv-card:hover::before {
+  width: 100%;
+}
+
+.vmv-card:hover::after {
+  transform: scaleY(1);
+}
+
+/* Text on gold fill — light mode: dark text */
+.vmv-card:hover span,
+.vmv-card:hover h3 {
+  color: var(--color-obsidian);
+}
+.vmv-card:hover p {
+  color: color-mix(in srgb, var(--color-obsidian) 80%, transparent);
+}
+
+/* Text on gold fill — dark mode: white text */
+.dark .vmv-card:hover span,
+.dark .vmv-card:hover h3 {
+  color: #ffffff;
+}
+.dark .vmv-card:hover p {
+  color: rgb(255 255 255 / 0.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vmv-card,
+  .vmv-card::before,
+  .vmv-card::after,
+  .vmv-card span,
+  .vmv-card h3,
+  .vmv-card p {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   Ghost number — oversized translucent index sitting behind a
+   card (Future Expansion / step cards). Goes gold on hover.
+   ============================================================ */
+.ghost-number {
+  position: absolute;
+  top: -0.15em;
+  left: 0;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(3.5rem, 7vw, 5.5rem);
+  line-height: 1;
+  color: var(--color-accent-glow-strong);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(14px) scale(0.95);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    /* Spring bounce so the number pops in with energy */
+    transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.group:hover .ghost-number {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============================================================
+   Number reveal — a card index badge that fades + lifts in only
+   when its parent .group is hovered.
+   ============================================================ */
+.num-reveal {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.9);
+  transition:
+    opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 0.35s ease;
+}
+
+.group:hover .num-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghost-number,
+  .num-reveal {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   Metallic button — subtle diagonal light sweep on hover.
+   Layer over an existing button; respects border radius.
+   ============================================================ */
+.btn-metallic {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-metallic::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 50%;
+  height: 200%;
+  z-index: 1;
+  transform: rotate(25deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.btn-metallic:hover::after {
+  left: 130%;
+}
+
+.btn-metallic:active {
+  transform: scale(0.97) translateY(1px);
+  transition: transform 0.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-metallic::after {
+    display: none;
+  }
+  .btn-metallic:active {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Parallax layers — driven by ParallaxObserver.tsx which sets
+   --px-y on each [data-parallax] element each animation frame.
+   Use --px-scale (inline style) to over-size the layer and
+   prevent edge gaps during movement.
+   ============================================================ */
+[data-parallax] {
+  transform: scale(var(--px-scale, 1)) translateY(var(--px-y, 0px));
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-parallax] {
+    transform: none !important;
+    will-change: auto;
+  }
+}
+
+/* ============================================================
+   Gradient section dividers — replaces flat border-t on
+   sections that want a softer visual break.
+   ============================================================ */
+.section-fade-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-border-strong) 20%,
+    var(--color-border-strong) 80%,
+    transparent
+  );
+}
+
+/* ============================================================
+   Page-enter animation — every route change fades the content
+   in with a tiny lift. Applied to <main> via PageShell.
+   ============================================================ */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: page-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   Mobile performance layer
+   ─────────────────────────────────────────────────────────
+   Touch devices (pointer: coarse) = phones + tablets.
+   Every CSS blur filter, backdrop-filter, and heavy shadow
+   below is replaced with a composited-only equivalent:
+   opacity + transform only.  These run in the GPU compositor
+   thread without triggering layout or paint, giving 60 fps
+   on mid-range Android and smooth inertia on iOS.
+   ============================================================ */
+@media (pointer: coarse) {
+
+  /* ── Scroll reveals: opacity + translate, no blur ── */
+  [data-reveal] {
+    filter: none;
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  [data-reveal="fade"]  { filter: none; }
+  [data-reveal="left"]  { filter: none; }
+  [data-reveal="right"] { filter: none; }
+  [data-reveal="scale"] { filter: none; }
+  [data-reveal].is-visible { filter: none; }
+
+  /* ── Hero entrance: no blur, same arc ── */
+  @keyframes hero-rise {
+    0%   { opacity: 0; transform: translateY(28px) scale(0.985); }
+    100% { opacity: 1; transform: translateY(0)    scale(1);      }
+  }
+  .hero-rise {
+    will-change: opacity, transform;
+  }
+
+  /* ── Nav intro: no blur ── */
+  @keyframes nav-intro {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+
+  /* ── Disable backdrop-filter on cards ──
+     backdrop-filter repaints the entire scene behind every card
+     on every scroll frame — one of the worst mobile GPU killers.  */
+  .premium-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  /* ── Simplify card hover shadows (touch = tap, not hover,
+     but the focus/active state can still trigger these)  ── */
+  .premium-card:hover,
+  .premium-card:focus-within {
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.10),
+      0 0 0 1px rgba(201, 169, 97, 0.20);
+  }
+  html.dark .premium-card:hover,
+  html.dark .premium-card:focus-within {
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(230, 201, 138, 0.25);
+  }
+
+  /* ── Ensure parallax layers don't drift on mobile ── */
+  [data-parallax] {
+    transform: scale(var(--px-scale, 1)) !important;
+    will-change: auto !important;
+  }
+
+  /* ── Skeleton shimmer: reduce to simple pulse on mobile ── */
+  .skeleton::after {
+    animation-duration: 2s;
+  }
+
+  /* ── Ghost number: no scale transform animation on small screens ── */
+  .ghost-number {
+    transform: translateY(14px);
+    transition:
+      opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* ── Navigation bar: keep backdrop-blur for readability over content ── */
+}
+
+
+/* ── Extra small screens: tighten animation offsets so nothing
+   overshoots the viewport edge at 320–375 px widths ── */
+@media (max-width: 480px) {
+  [data-reveal="left"]  { transform: translateX(-18px); }
+  [data-reveal="right"] { transform: translateX(18px);  }
+  [data-reveal]         { transform: translateY(18px);  }
+
+  @keyframes hero-rise {
+    0%   { opacity: 0; transform: translateY(20px) scale(0.988); }
+    100% { opacity: 1; transform: translateY(0)    scale(1);      }
+  }
+
+  /* Reduce stagger delay between cards on narrow screens */
+  [data-reveal-stagger] > [data-reveal]:nth-child(n+5) {
+    --reveal-delay: 360ms;
+  }
+}

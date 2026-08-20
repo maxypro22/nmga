@@ -93,7 +93,7 @@ function Hero({ locale, hero }: { locale: Locale; hero: DivisionsHero }) {
             className="relative h-[300px] overflow-hidden rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.06] dark:ring-white/[0.05] lg:h-[520px]"
           >
             <Image
-              src="/images/heroes/divisions-hero-v2.jpg"
+              src="/images/heroes/divisions-hero-v3.jpg"
               alt="NMJ Group Divisions — Doha, Qatar"
               fill
               sizes="(min-width: 1024px) 440px, 100vw"

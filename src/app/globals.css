@@ -1184,3 +1184,14 @@ html.dark .ambient::before {
     --reveal-delay: 360ms;
   }
 }
+
+/* Careers — division panel reveal after a company is selected */
+.jobs-panel {
+  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jobs-panel {
+    animation: none;
+  }
+}

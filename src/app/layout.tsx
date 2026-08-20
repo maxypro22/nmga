@@ -6,7 +6,6 @@ import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
 import { PageShell } from "@/components/layout/PageShell";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
-import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { RevealObserver } from "@/components/layout/RevealObserver";
 import { CursorGlow } from "@/components/layout/CursorGlow";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
@@ -168,7 +167,6 @@ export default async function RootLayout({
             <PageShell>{children}</PageShell>
           </main>
           <Footer />
-          <WhatsAppButton />
           <ScrollToTop />
           <ScrollProgress />
           <ParallaxObserver />

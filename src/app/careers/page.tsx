@@ -5,7 +5,9 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Icon } from "@/components/ui/Icon";
 import { getDictionary, withLocale, type Locale } from "@/lib/i18n";
 import { getActiveJobs, STATIC_JOBS, type JobRow } from "@/lib/jobs";
+import { sectors } from "@/lib/sectors";
 import { CardCarousel } from "@/components/ui/CardCarousel";
+import { JobsExplorer, type ExplorerDivision } from "./JobsExplorer";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +19,62 @@ export const metadata: Metadata = {
 };
 
 const SECTION_PADDING = "px-6 py-[clamp(4rem,8vw,8rem)] md:px-10 lg:px-14";
+
+/** Loose key so "Real Estate", "real-estate" and "realestate" all resolve to one division. */
+function divisionKey(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Groups the open roles under the division (company) they belong to, so the
+ * careers page can ask the visitor to pick a division before showing its jobs.
+ * Divisions with no live roles are still listed — shown as disabled cards.
+ */
+function groupJobsByDivision(jobs: JobRow[], locale: Locale): ExplorerDivision[] {
+  const items = getDictionary(locale).divisions.items;
+  const grouped: ExplorerDivision[] = sectors.map((sector) => ({
+    slug: sector.slug,
+    name: items[sector.slug]?.name ?? sector.name,
+    icon: sector.icon,
+    companies: sector.companies.map((c) => c.name),
+    jobs: [],
+  }));
+
+  const bySlug = new Map<string, ExplorerDivision>();
+  for (const division of grouped) bySlug.set(division.slug, division);
+
+  const lookup = new Map<string, ExplorerDivision>();
+  for (const sector of sectors) {
+    const division = bySlug.get(sector.slug)!;
+    lookup.set(divisionKey(sector.name), division);
+    lookup.set(divisionKey(sector.slug), division);
+  }
+
+  for (const job of jobs) {
+    const match = lookup.get(divisionKey(job.division ?? ""));
+    if (match) {
+      match.jobs.push(job);
+      continue;
+    }
+    // Unknown division on the record — keep the role visible under its own card.
+    const slug = `other-${divisionKey(job.division || "general")}`;
+    let extra = bySlug.get(slug);
+    if (!extra) {
+      extra = {
+        slug,
+        name: job.division || "NMJ Group",
+        icon: "building",
+        companies: [],
+        jobs: [],
+      };
+      bySlug.set(slug, extra);
+      grouped.push(extra);
+    }
+    extra.jobs.push(job);
+  }
+
+  return grouped;
+}
 
 export default function CareersPage() {
   return <CareersBody locale="en" />;
@@ -183,48 +241,25 @@ export async function CareersBody({ locale }: { locale: Locale }) {
             </p>
           </div>
 
-          <ul data-reveal-stagger="60" className="divide-y divide-[var(--color-border)]">
-            {jobs.map((job) => (
-              <li key={job.id || job.title} data-reveal>
-                <div className="group flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between md:py-7">
-                  <div>
-                    <h3 className="font-serif text-lg leading-tight text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-gold)] md:text-xl">
-                      {job.title}
-                    </h3>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-                      <span className="flex items-center gap-1.5 text-[12px] text-[var(--color-text-muted)]">
-                        <Icon name="building" size={12} />
-                        {job.division} {d.openings.divisionLabel}
-                      </span>
-                      <span className="flex items-center gap-1.5 text-[12px] text-[var(--color-text-muted)]">
-                        <Icon name="location" size={12} />
-                        {job.location}
-                      </span>
-                      <span className="rounded-full border border-[var(--color-border-strong)] px-2.5 py-0.5 text-[10px] uppercase tracking-[0.15em] text-[var(--color-text-muted)]">
-                        {job.type}
-                      </span>
-                    </div>
-                    {job.description && (
-                      <p className="mt-3 text-[13px] leading-relaxed text-[var(--color-text-muted)]">
-                        {job.description}
-                      </p>
-                    )}
-                  </div>
-                  <a
-                    href={`mailto:careers@nmj-group.qa?subject=Application: ${encodeURIComponent(job.title)}`}
-                    className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--color-border-strong)] px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-[var(--color-ink)] transition-all hover:border-[var(--color-gold)] hover:text-[var(--color-gold)]"
-                  >
-                    {d.openings.applyLabel}
-                    <span aria-hidden className="rtl:rotate-180">
-                      <Icon name="arrow-right" size={12} />
-                    </span>
-                  </a>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <JobsExplorer
+            divisions={groupJobsByDivision(jobs, locale)}
+            applyEmail={d.apply.email}
+            labels={{
+              selectPrompt: d.openings.selectPrompt,
+              back: d.openings.back,
+              rolesOne: d.openings.rolesOne,
+              rolesMany: d.openings.rolesMany,
+              rolesNone: d.openings.rolesNone,
+              viewRoles: d.openings.viewRoles,
+              companiesLabel: d.openings.companiesLabel,
+              emptyState: d.openings.emptyState,
+              applyLabel: d.openings.applyLabel,
+              divisionLabel: d.openings.divisionLabel,
+            }}
+          />
         </div>
       </section>
+
 
       {/* Apply CTA */}
       <section

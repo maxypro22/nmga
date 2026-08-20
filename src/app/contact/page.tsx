@@ -101,7 +101,7 @@ export function ContactBody({
 
   return (
     <article>
-      <Hero locale={locale} hero={hero} />
+      <Hero hero={hero} />
       <ContactInfoSection locale={locale} cards={contactCards} />
       <ContactFormSection locale={locale} />
       <LocationSection locale={locale} />
@@ -110,8 +110,7 @@ export function ContactBody({
   );
 }
 
-function Hero({ locale, hero }: { locale: Locale; hero: ContactHero }) {
-  const dict = getDictionary(locale);
+function Hero({ hero }: { hero: ContactHero }) {
   return (
     <section
       aria-labelledby="contact-hero"
@@ -122,7 +121,6 @@ function Hero({ locale, hero }: { locale: Locale; hero: ContactHero }) {
       >
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,440px)] lg:gap-16 xl:gap-24">
           <div>
-            <Eyebrow data-reveal>{dict.nav.contact}</Eyebrow>
             <h1
               id="contact-hero"
               data-reveal
@@ -147,7 +145,7 @@ function Hero({ locale, hero }: { locale: Locale; hero: ContactHero }) {
             className="relative h-[300px] overflow-hidden rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.06] dark:ring-white/[0.05] lg:h-[480px]"
           >
             <Image
-              src="/images/heroes/contact-hero.jpg"
+              src="/images/heroes/contact-hero-v3.jpg"
               alt="NMJ Group Contact — Doha, Qatar"
               fill
               sizes="(min-width: 1024px) 440px, 100vw"

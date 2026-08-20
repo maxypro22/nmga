@@ -466,6 +466,16 @@ const en = {
       typeLabel: "Type",
       locationLabel: "Location",
       divisionLabel: "Division",
+      selectPrompt: "Select a division to view its open roles",
+      back: "All divisions",
+      rolesOne: "1 open role",
+      rolesMany: "{n} open roles",
+      rolesNone: "No open roles",
+      viewRoles: "View roles",
+      companiesLabel: "Companies",
+      emptyState:
+        "There are no published openings in this division right now. Send us your CV and we will keep it on file.",
+      totalRoles: "{n} open roles across {d} divisions",
     },
     apply: {
       eyebrow: "Get Started",
@@ -978,6 +988,16 @@ const ar: Dictionary = {
       typeLabel: "نوع الدوام",
       locationLabel: "الموقع",
       divisionLabel: "القسم",
+      selectPrompt: "اختر القسم لعرض الوظائف المتاحة فيه",
+      back: "كل الأقسام",
+      rolesOne: "وظيفة واحدة متاحة",
+      rolesMany: "{n} وظائف متاحة",
+      rolesNone: "لا توجد وظائف متاحة",
+      viewRoles: "عرض الوظائف",
+      companiesLabel: "الشركات",
+      emptyState:
+        "لا توجد وظائف منشورة في هذا القسم حالياً. أرسل لنا سيرتك الذاتية وسنحتفظ بها لدينا.",
+      totalRoles: "{n} وظيفة متاحة في {d} أقسام",
     },
     apply: {
       eyebrow: "ابدأ الآن",

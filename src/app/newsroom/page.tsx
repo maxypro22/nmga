@@ -134,10 +134,11 @@ export async function NewsroomBody({ locale }: { locale: Locale }) {
               className="relative h-[300px] overflow-hidden rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.06] dark:ring-white/[0.05] lg:h-[500px]"
             >
               <Image
-                src="/images/heroes/newsroom-hero.jpg"
+                src="/images/heroes/newsroom-hero-v2.jpg"
                 alt="NMJ Group Newsroom — Official News & Press Releases"
                 fill
-                sizes="(min-width: 1024px) 440px, 100vw"
+                sizes="(min-width: 1024px) 920px, 150vw"
+                quality={92}
                 className="object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
                 priority
               />

@@ -39,6 +39,7 @@ const nextConfig: NextConfig = {
   },
   poweredByHeader: false,
   images: {
+    formats: ["image/avif", "image/webp"],
     qualities: [75, 90, 92],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

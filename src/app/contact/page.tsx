@@ -145,10 +145,11 @@ function Hero({ hero }: { hero: ContactHero }) {
             className="relative h-[300px] overflow-hidden rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.06] dark:ring-white/[0.05] lg:h-[480px]"
           >
             <Image
-              src="/images/heroes/contact-hero-v3.jpg"
+              src="/images/heroes/contact-hero-v4.jpg"
               alt="NMJ Group Contact — Doha, Qatar"
               fill
-              sizes="(min-width: 1024px) 440px, 100vw"
+              sizes="(min-width: 1024px) 900px, 150vw"
+              quality={92}
               className="object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
               priority
             />
